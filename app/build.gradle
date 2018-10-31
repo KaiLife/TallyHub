@@ -1,0 +1,100 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        applicationId "com.tan66.tallyhub"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi', 'arm64-v8a'
+//            abiFilters 'armeabi', 'arm64-v8a', 'x86'
+        }
+
+        resConfigs "zh", "en"
+
+        resValue "string", "app_name", "弹溜溜"   // 设置默认的app_name
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+        disable 'MissingTranslation'
+    }
+
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+        javaMaxHeapSize "2g"
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("keystore.jks")
+            storePassword "t123456"
+            keyAlias "txk"
+            keyPassword "t123456"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            jniDebuggable true
+
+            buildConfigField("String", "BASE_URL", "\"http://47.98.240.102:8085/\"")
+
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            minifyEnabled true//混淆
+            debuggable false
+            jniDebuggable false
+            zipAlignEnabled true
+            shrinkResources true
+
+            buildConfigField("String", "BASE_URL", "\"http://ssj.tan66.com/\"")
+
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+}
